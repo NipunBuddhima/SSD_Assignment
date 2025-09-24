@@ -1,11 +1,13 @@
 import express from "express";
 import { verifyAuthentication } from "../middleware/auth.middleware.js";
 import FeedbackController from "../controllers/feedback.controller.js";
+import csrfProtection from "../middleware/csrf.middleware.js";
 
 const router = express.Router();
 
 router.route("/api/add-feedback").post(
     verifyAuthentication,
+    csrfProtection,
     FeedbackController.addFeedback
 )
 
@@ -15,25 +17,27 @@ router.route("/api/feedback").post(
 )
 
 router.route("/api/feedback").get(
-    //verifyAuthentication,
+    verifyAuthentication,
     FeedbackController.getAllFeedback
 )
 
 // get feedback by user nic
 router.route("/api/feedback/:nic").get(
-    //verifyAuthentication,
+    verifyAuthentication,
     FeedbackController.getFeedbackByNic
 )
 
 // delete feedback
 router.route("/api/delete-feedback/:id").delete(
     verifyAuthentication,
+    csrfProtection,
     FeedbackController.deleteFeedback
 )
 
 // update feedback
 router.route("/api/update-feedback/:id").put(
     verifyAuthentication,
+    csrfProtection,
     FeedbackController.updateFeedback
 )
 
