@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Backend localhost URL with backend PORT
-let baseUrl = "http://localhost:5000"
+let baseUrl = "http://localhost:5001"
 
 let AxiosController = {};
 

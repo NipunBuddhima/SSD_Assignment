@@ -1,55 +1,83 @@
-# Courier Service Management System
+# Courier Service Management System (CSMS)
 
-A system for managing courier services efficiently.
+A comprehensive system for managing courier services efficiently with React frontend and Node.js backend.
 
-## Prerequisites
+## 🚀 Quick Setup
 
-- Node.js installed. - [Download Node.js](https://nodejs.org/en/download)
-- MySQL installed. - [Download MySQL](https://dev.mysql.com/downloads/installer/)
-- Git installed. [Download Git](https://git-scm.com/downloads)
-- VSCode or any suitable IDE.
+Run the automated setup script:
+```bash
+./setup.sh
+```
 
-## Starting Steps
+## 📋 Prerequisites
 
-1. Open the terminal in a suitable location and clone the project using the following command:
+- Node.js (v14 or higher) - [Download Node.js](https://nodejs.org/en/download)
+- MySQL (v8.0 or higher) - [Download MySQL](https://dev.mysql.com/downloads/installer/)
+- Git - [Download Git](https://git-scm.com/downloads)
 
-    `git clone https://github.com/FlexStackDevelopers/courier-service-management-system.git`
+## 🛠️ Manual Setup
 
-2. Open the project in VSCode.
-3. Create two terminals
-4. In one of the terminals, navigate to the backend using the command:
+### 1. Install Dependencies
+```bash
+# Install backend dependencies
+cd backend
+npm install
 
-    `cd backend`
+# Install frontend dependencies  
+cd ../frontend
+npm install
+```
 
-5. Install Backend Dependencies using the command:
+### 2. Database Setup
+```bash
+# Import the database
+./import-db.sh
+# OR manually:
+# mysql -u root -p csmsdb < database-dump/csmsdb.sql
+```
 
-    `npm i`
-6. Edit the .env.sample file. Fill relevant environment variables.
+### 3. Environment Configuration
 
-    - `PORT = YOUR_PORT`
-    - `DB_HOST='Type your database host address here. Do not remove '' s'`
-    - `DB_USER='Type your database user name Do not remove '' s'`
-    - `DB_PASSWORD='Type your database password Do not remove '' s'`
-    - `DB_NAME='Type your database name Do not remove '' s'`
-    - `DB_PORT='Type your database port Do not remove '' s'`
-    - `JWT_SECRET='Type your JWT Secret here. Do not remove '' s'`
+**Backend (.env)**:
+```env
+PORT=5000
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=your_password_here
+DB_NAME=csmsdb
+JWT_SECRET=your_jwt_secret_key_here
+```
 
-7. Rename .env.sample to .env
+**Frontend (.env)**:
+```env
+REACT_APP_API_URL=http://localhost:5000
+```
 
-8. Start the backend server using the command:
+### 4. Start the Application
 
-    `npm start`
+**Terminal 1 - Backend:**
+```bash
+cd backend
+npm start
+```
 
-9. In the other terminal, navigate to the frontend using the command:
+**Terminal 2 - Frontend:**
+```bash
+cd frontend  
+npm start
+```
 
-    `cd frontend`
+## 🌐 Application URLs
 
-10. Install Frontend Dependencies using the command:
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:5000
 
-    `npm i`
+## 🏗️ Project Structure
 
-11. Start the frontend using the command:
-
-    `npm start`
-
-12. Developer Mode Activated!!!
+```
+├── backend/          # Node.js/Express API
+├── frontend/         # React Application  
+├── database-dump/    # MySQL Database Schema
+├── setup.sh         # Automated setup script
+└── import-db.sh     # Database import script
+```
