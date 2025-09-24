@@ -1,33 +1,36 @@
 import express from "express";
-import BranchController from "../controllers/branch.controller.js"; //Always add .js at the end
-import { verifyAuthentication } from "../middleware/auth.middleware.js";
+import BranchController from "../controllers/branch.controller.js";
+import { verifyAuthentication, adminOnly, managerAccess } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-router.route("/api/add-branch").post(
-  verifyAuthentication,
+// Admin only - Add branch
+router.route("/api/v1/add-branch").post(
+  ...adminOnly,
   BranchController.addBranch
 );
 
-router.route("/api/branch-id-by-nic").post(
-  verifyAuthentication,
+// Manager access - Get branch by manager NIC
+router.route("/api/v1/branch-id-by-nic").post(
+  ...managerAccess,
   BranchController.getBranchIdByBranchManagerNIC
 );
 
-router.route("/api/branches").get(
-  // verifyAuthentication,
+// Manager access - Get all branches (restricted access)
+router.route("/api/v1/branches").get(
+  ...managerAccess,
   BranchController.getAllBranches
 );
 
-// update branch
-router.route("/api/update-branch/:branchId").put(
-  verifyAuthentication,
+// Admin only - Update branch
+router.route("/api/v1/update-branch/:branchId").put(
+  ...adminOnly,
   BranchController.updateBranch
 );
 
-// delete branch
-router.route("/api/delete-branch/:branchId").delete(
-  verifyAuthentication,
+// Admin only - Delete branch
+router.route("/api/v1/delete-branch/:branchId").delete(
+  ...adminOnly,
   BranchController.deleteBranch
 );
 
