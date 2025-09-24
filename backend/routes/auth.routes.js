@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
+import csrfProtection from "../middleware/csrf.middleware.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,7 +14,7 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 const router = express.Router();
 
-router.route("/api/user/auth").post((req, res) => {
+router.route("/api/user/auth").post(csrfProtection, (req, res) => {
     const token = req.cookies.jwt;
     if(token)
     {
