@@ -4,18 +4,10 @@
 //Depends on bcrypt to hash/compare user passwords
 
 import UserService from "../services/user.service.js";
-import bcrypt from "bcrypt"; // Encrypt password
 import AuthController from "./auth.controller.js";
+import bcrypt from "bcrypt"; // Use bcrypt to hash the password
 
 let UserController = {};
-
-//Function to hash passwords when registereing users. Uses 10 salt rounds to hash. Modifiy if needed
-function hashPassword(password) {
-  let saltRounds = 10;
-  const salt = bcrypt.genSaltSync(saltRounds);
-  const hash = bcrypt.hashSync(password, salt);
-  return hash;
-}
 
 //This is the loggin in handling function. Handeles user verifications.
 //TODO:Impliment JWT for this.
@@ -39,11 +31,12 @@ UserController.verifyCredentials = async (req, res) => {
       res.status(404).send({ message: "User not found!" });
     } else {
       let user = userList[0];
+      // Update Password Verification - bcrypt.compare to ensure secure authentication
       let match = await bcrypt.compare(password, user.password);
       if (match) {
         //JWT creation and sending through cookies
         let token = AuthController.createToken(nicNo);
-        res.cookie("jwt", token, { httpOnly: true });
+        res.cookie("jwt", token, { httpOnly: true, secure: true, sameSite: "strict" });
 
         //Now sending user details as well as role id for conditional rendering
         res
@@ -67,7 +60,7 @@ UserController.signUpUser = async (nicNo, password, roleId) => {
     if (userList.length !== 0) {
       throw Error("User already exists");
     } else {
-      let hashedPassword = hashPassword(password);
+      let hashedPassword = await bcrypt.hash(password, 12);
       await UserService.registerUser(nicNo, hashedPassword, roleId);
     }
   } catch (e) {
@@ -79,7 +72,7 @@ UserController.signUpUser = async (nicNo, password, roleId) => {
 //Function to update user password. Used in the update profile password page.
 UserController.updateUserPassword = async (nicNo, password) => {
   try {
-    let hashedPassword = hashPassword(password);
+    let hashedPassword = await bcrypt.hash(password, 12);
     await UserService.updateUserPassword(nicNo, hashedPassword);
   } catch (e) {
     console.error("Error updating user password : " + e);
@@ -89,7 +82,7 @@ UserController.updateUserPassword = async (nicNo, password) => {
 
 //Logout function setting the jwt auth token to null and removing it after 1 millisecond.
 UserController.logOutUser = (req, res) => {
-  res.cookie("jwt", "", { maxAge: 1 });
+  res.cookie("jwt", "", { maxAge: 1, httpOnly: true, secure: true, sameSite: "strict" });
   res.status(200);
 };
 
