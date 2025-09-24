@@ -2,6 +2,7 @@
 
 // Import reacstrap componenet to design loginView
 import { Container, Row, Col, Card, CardBody, Form, FormGroup, Label, Input, Button } from 'reactstrap';
+import DOMPurify from 'dompurify';
 
 import React, { useState } from "react";
 import AxiosController from "../../../controllers/axios.controller";
@@ -17,6 +18,7 @@ function LoginView() {
 
   // useState hook to store credentials
   let [credentials, setCredentials] = useState({ nic: "", password: "" });
+  let [errorMessage, setErrorMessage] = useState("");
 
   // using login hook
   let [updateRoleId] = useLogin();
@@ -27,15 +29,44 @@ function LoginView() {
   // input change handle function
   function onChange(event) {
     let { name, value } = event.target;
+    
+    // Sanitize input to prevent XSS
+    const sanitizedValue = DOMPurify.sanitize(value.trim());
+    
     setCredentials((prevOptions) => ({
       ...prevOptions,
-      [name]: value,
+      [name]: sanitizedValue
     }));
   }
+
+  // Input validation
+  const validateNIC = (nic) => {
+    return /^[0-9]{9}[vVxX]$|^[0-9]{12}$/.test(nic);
+  };
+
+  // Safe error display
+  const displayError = () => {
+    if (errorMessage) {
+      // Use text content instead of innerHTML
+      return <div className="error-message">{DOMPurify.sanitize(errorMessage)}</div>;
+    }
+  };
 
   //submit handler. Move axios instance code to a seperate controller if possible for security purpose
   const onSubmit = async (event) => {
     event.preventDefault();
+    
+    // Validate inputs before submission
+    if (!validateNIC(credentials.nic)) {
+      setErrorMessage("Invalid NIC format");
+      return;
+    }
+    
+    if (!credentials.password || credentials.password.length < 6) {
+      setErrorMessage("Password must be at least 6 characters");
+      return;
+    }
+
     let response = await AxiosController.instance.post(
       "/api/user/login",
       {
@@ -69,16 +100,20 @@ function LoginView() {
             <Card style={{ height: '50vh', padding: '20px'}}>
               <CardBody>
                 <h3 className="text-center mb-4">Login</h3>
+                {displayError()}
                 <Form onSubmit={onSubmit}>
                   <FormGroup>
                     <Label for="nic">NIC</Label>
                     <Input
-                      type="nic"
+                      type="text"
                       name="nic"
                       id="nic"
                       placeholder="Enter your nic"
                       value={credentials.nic}
                       onChange={onChange}
+                      pattern="^[0-9]{9}[vVxX]$|^[0-9]{12}$"
+                      maxLength="12"
+                      required
                     />
                   </FormGroup>
                   <FormGroup>
@@ -90,6 +125,8 @@ function LoginView() {
                       placeholder="Enter your password"
                       value={credentials.password}
                       onChange={onChange}
+                      minLength="6"
+                      required
                     />
                   </FormGroup>
                   {/* Added custom margin -----------------------------------------------------------------*/}

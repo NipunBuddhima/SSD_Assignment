@@ -7,6 +7,7 @@ let UserService = {};
 //Function to get user credentials when logging in
 UserService.getUserCrednetials = async (nicNo) => {
   try {
+    // Use parameterized query instead of string concatenation
     let query = `
         SELECT * FROM usercredentials
         WHERE userNic = ?
@@ -31,13 +32,19 @@ UserService.registerUser = async (nicNo, password, roleId) => {
   }
 };
 
-//Function to update user password
+//Function to update user password - Add input validation
 UserService.updateUserPassword = async (nicNo, password) => {
   try {
+    // Validate inputs
+    if (!nicNo || !password) {
+      throw new Error("Invalid input parameters");
+    }
+
+    // Use parameterized query
     let query = `UPDATE usercredentials SET password = ? WHERE userNic = ?`;
     await pool.query(query, [password, nicNo]);
   } catch (e) {
-    console.error("Error updating user password! :" + e);
+    console.error("Error updating password: " + e);
     throw e;
   }
 };

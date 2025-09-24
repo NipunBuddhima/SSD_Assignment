@@ -13,12 +13,13 @@ import {
   Alert
 } from "reactstrap";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useCookie from "../../../hooks/useCookies";
 import BranchManagerController from "../controllers/user.controller.js";
 import { BranchManagerRoutes } from "../../../routes/all_user.routes";
 import validator from "../../../validation/validation.js";
+import DOMPurify from 'dompurify';
 
 
 const AddNewClient = () => {
@@ -85,10 +86,14 @@ const AddNewClient = () => {
   const onChange = (e) => {
     console.log(e.target.value);
     const { name, value } = e.target;
+
+    // Sanitize input to prevent XSS
+    const sanitizedValue = DOMPurify.sanitize(value);
+
     setInputData((preval) => {
       return {
         ...preval,
-        [name]: value
+        [name]: sanitizedValue
       }
     })
     // onChange Form validation data set on change
