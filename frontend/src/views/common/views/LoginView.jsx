@@ -67,27 +67,42 @@ function LoginView() {
       return;
     }
 
-    let response = await AxiosController.instance.post(
-      "/api/user/login",
-      {
-        nic_no: credentials.nic,
-        password: credentials.password,
+    try {
+      let response = await AxiosController.instance.post(
+        "/api/user/login",
+        {
+          nic_no: credentials.nic,
+          password: credentials.password,
+        }
+      );
+
+      // Conditional rendering/navigating based on role id. Find a better way if possible
+      if (response.data.status) {
+
+        // store role id and nic no in a variable
+        let role_id = response.data.role_id;
+        let nic_no = response.data.nic_no;
+
+        //set cookies - userNIC and user roleID
+        setCookie('user-nic', nic_no);
+        setCookie('user-role-id', role_id);
+
+        //updating login hook and redirecting
+        updateRoleId(role_id);
       }
-    );
-
-    // Conditional rendering/navigating based on role id. Find a better way if possible
-    if (response.data.status) {
-
-      // store role id and nic no in a variable
-      let role_id = response.data.role_id;
-      let nic_no = response.data.nic_no;
-
-      //set cookies - userNIC and user roleID
-      setCookie('user-nic', nic_no);
-      setCookie('user-role-id', role_id);
-
-      //updating login hook and redirecting
-      updateRoleId(role_id);
+    } catch (error) {
+      console.error("Login error:", error);
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        setErrorMessage(error.response.data.message || "Login failed. Please try again.");
+      } else if (error.request) {
+        // The request was made but no response was received
+        setErrorMessage("Cannot connect to server. Please check if the backend is running.");
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        setErrorMessage("An error occurred. Please try again.");
+      }
     }
   };
 

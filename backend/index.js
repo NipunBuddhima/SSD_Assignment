@@ -40,6 +40,9 @@ const PORT = process.env.PORT;
 
 const app = express();
 
+// CORS middleware - MUST BE FIRST!
+app.use(corsMiddleware);
+
 // Security headers
 app.use(helmet({
   contentSecurityPolicy: {
