@@ -12,6 +12,9 @@ import cookieParser from "cookie-parser";
 // importing cors middleware
 import corsMiddleware from "./middleware/cors.middleware.js";
 
+import { cookieParserMiddleware } from "./middleware/csrf.middleware.js";
+import csrfProtection from "./middleware/csrf.middleware.js";
+
 // Import routes below this line. Do not edit anything above.
 import { router as userRouter } from "./routes/user.routes.js";
 import { router as authRoutes } from "./routes/auth.routes.js";
@@ -36,12 +39,14 @@ import ValidationMiddleware from "./middleware/validation.middleware.js";
 // Do not edit anything below - (Ashan Thilochana)
 
 dotenv.config();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 
 const app = express();
 
 // CORS middleware - MUST BE FIRST!
 app.use(corsMiddleware);
+app.use(cookieParserMiddleware);
+app.use(csrfProtection);
 
 // Security headers
 app.use(helmet({
@@ -83,6 +88,11 @@ app.use(ticketRouter);
 app.use(feedbackRouter);
 
 // Setup port listner
-app.listen(PORT, () => {
+/* app.listen(PORT, () => {
   console.log("Server running on port " + PORT);
+});
+ */
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

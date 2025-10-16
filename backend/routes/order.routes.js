@@ -40,7 +40,7 @@ router.route("/api/order/:orderId").get(
 
 router.route("/api/update-order/:orderId").put(
     verifyAuthentication,
-    csrfProtecction,
+    csrfProtection,
     OrderController.updateOrder
 );
 
