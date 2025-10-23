@@ -1,7 +1,18 @@
 //A simple login ui to check for authentication of jwts and conditional rendering. Test for more
 
 // Import reacstrap componenet to design loginView
-import { Container, Row, Col, Card, CardBody, Form, FormGroup, Label, Input, Button } from 'reactstrap';
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  CardBody,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  Button,
+} from "reactstrap";
 
 import React, { useState } from "react";
 import AxiosController from "../../../controllers/axios.controller";
@@ -9,10 +20,10 @@ import useLogin from "../hooks/useLogin.js";
 import useCookie from "../../../hooks/useCookies";
 import { useNavigate } from "react-router-dom";
 
-import './LoginView.module.css'; // This is not wooooooooooooooooooooooooooooooooooooooooooooooorking, Not importing shiiiiiiit
+import "./LoginView.module.css"; // This is not wooooooooooooooooooooooooooooooooooooooooooooooorking, Not importing shiiiiiiit
+import GoogleSignInButton from "../../../components/common/GoogleSignInButton.jsx";
 
 function LoginView() {
-
   const navigate = useNavigate();
 
   // useState hook to store credentials
@@ -36,24 +47,20 @@ function LoginView() {
   //submit handler. Move axios instance code to a seperate controller if possible for security purpose
   const onSubmit = async (event) => {
     event.preventDefault();
-    let response = await AxiosController.instance.post(
-      "/api/user/login",
-      {
-        nic_no: credentials.nic,
-        password: credentials.password,
-      }
-    );
+    let response = await AxiosController.instance.post("/api/user/login", {
+      nic_no: credentials.nic,
+      password: credentials.password,
+    });
 
     // Conditional rendering/navigating based on role id. Find a better way if possible
     if (response.data.status) {
-
       // store role id and nic no in a variable
       let role_id = response.data.role_id;
       let nic_no = response.data.nic_no;
 
       //set cookies - userNIC and user roleID
-      setCookie('user-nic', nic_no);
-      setCookie('user-role-id', role_id);
+      setCookie("user-nic", nic_no);
+      setCookie("user-role-id", role_id);
 
       //updating login hook and redirecting
       updateRoleId(role_id);
@@ -65,8 +72,7 @@ function LoginView() {
       <Container className="py-5">
         <Row className="justify-content-center">
           <Col md={4}>
-            {/* Added custom styles-------------------------------------------------- */}
-            <Card style={{ height: '50vh', padding: '20px'}}>
+            <Card style={{ height: "60vh", padding: "20px" }}>
               <CardBody>
                 <h3 className="text-center mb-4">Login</h3>
                 <Form onSubmit={onSubmit}>
@@ -92,8 +98,14 @@ function LoginView() {
                       onChange={onChange}
                     />
                   </FormGroup>
+
+                  {/* Google OAuth button - redirects to backend OAuth endpoint */}
+                  <GoogleSignInButton />
+
                   {/* Added custom margin -----------------------------------------------------------------*/}
-                  <Button style={{ marginTop : '40px'}} color="primary" block>Login</Button>
+                  <Button style={{ marginTop: "40px" }} color="primary" block>
+                    Login
+                  </Button>
                 </Form>
               </CardBody>
             </Card>
@@ -126,6 +138,5 @@ function LoginView() {
     // </div>
   );
 }
-
 
 export default LoginView;
